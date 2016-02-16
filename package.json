@@ -1,0 +1,31 @@
+{
+  "name": "peafowl",
+  "version": "0.0.1",
+  "description": "Peafowl.js - Self Learning Weighted Multivariate Testing Tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://programmatio@github.com/programmatio/peafowl.git"
+  },
+  "keywords": [
+    "ab",
+    "multivariate",
+    "testing",
+    "optimisation"
+  ],
+  "author": "M Spogis <max.spogis@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/programmatio/peafowl/issues"
+  },
+  "homepage": "https://github.com/programmatio/peafowl#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-docco": "0.0.4",
+    "gulp-mocha": "^2.2.0",
+    "mocha": "^2.4.5"
+  }
+}
