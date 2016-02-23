@@ -3,7 +3,6 @@ var peafowl = require('../index.js'),
     removePage = peafowl.removePage;
 
 describe('Global', function() {
-
   describe('#addPage()', function() {
     it('adds the page and returns true', function() {
     removePage('page1');
@@ -15,5 +14,4 @@ describe('Global', function() {
     removePage('page1');
     });
   });
-
 });
