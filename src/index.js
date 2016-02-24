@@ -1,5 +1,8 @@
+let EpsilonGreedy = require('./lib/epsilon-greedy.js');
+let UCB1 = require('./lib/ucb1.js');
 
 
+//Test
 
 module.exports = {
   // Add page to the group
@@ -11,5 +14,3 @@ module.exports = {
     return true;
   }
 };
-
-
