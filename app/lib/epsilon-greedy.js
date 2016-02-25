@@ -20,30 +20,25 @@ var EpsilonGreedy = function () {
   _createClass(EpsilonGreedy, [{
     key: "initialize",
     value: function initialize(nArms) {
-      this.nArms = nArms.length;
-      // Set initial values to 0
+      this.nArms = nArms;
       this.counts = new Array(this.nArms).fill(0);
       this.values = new Array(this.nArms).fill(0);
     }
   }, {
     key: "selectArm",
     value: function selectArm() {
-
       if (Math.random() > this.epsilon) {
         var _Math;
 
         // Return index of the arm with greatest rewards
-        console.log("Epsilon: ");
         return this.values.indexOf((_Math = Math).max.apply(_Math, _toConsumableArray(this.values)));
       } else {
-        console.log("Random: ");
-        return Math.ceil(Math.random() * this.values.length) - 1;
+        return Math.floor(Math.random() * this.values.length);
       }
     }
   }, {
     key: "update",
     value: function update(chosenArm, reward) {
-
       this.counts[chosenArm]++;
       var n = this.counts[chosenArm];
       var value = this.values[chosenArm];
