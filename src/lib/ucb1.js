@@ -1,6 +1,6 @@
 // UCB1 Algorithm Implementation
-
 class UCB1 {
+
   constructor(counts, values){
     this.counts = counts;
     this.values = values;
@@ -12,7 +12,6 @@ class UCB1 {
   };
 
   // Method to select the arm
-
   selectArm(){
     this.nArms = this.counts.length;
 
@@ -25,8 +24,7 @@ class UCB1 {
     var ucbValues = [];
     var totalCounts = sum(this.counts);
 
-
-    for (var col in this.nArms){
+    for (var col = 1; col < this.nArms; col++){
       ucbValues.append(0.0);
       bonus = Math.sqrt(2 * Math.log(totalCounts));
       ucbValues[arm] = this.values[arm] + bonus;
@@ -39,18 +37,13 @@ class UCB1 {
   };
 
   update(chosenArm, reward){
-
     var n = this.counts[chosenArm];
-
     var value = this.values[chosenArm];
     var newValue = ((n - 1) / n) * value + (1 / n) * reward;
-
-
     this.values[chosenArm] = newValue;
     return;
 
   };
 }
-
 
 module.exports = UCB1;

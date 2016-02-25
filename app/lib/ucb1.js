@@ -25,7 +25,6 @@ var UCB1 = function () {
 
 
     // Method to select the arm
-
     value: function selectArm() {
       this.nArms = this.counts.length;
 
@@ -38,7 +37,7 @@ var UCB1 = function () {
         var ucbValues = [];
         var totalCounts = sum(this.counts);
 
-        for (var col in this.nArms) {
+        for (var col = 1; col < this.nArms; col++) {
           ucbValues.append(0.0);
           bonus = Math.sqrt(2 * Math.log(totalCounts));
           ucbValues[arm] = this.values[arm] + bonus;
@@ -50,12 +49,9 @@ var UCB1 = function () {
   }, {
     key: "update",
     value: function update(chosenArm, reward) {
-
       var n = this.counts[chosenArm];
-
       var value = this.values[chosenArm];
       var newValue = (n - 1) / n * value + 1 / n * reward;
-
       this.values[chosenArm] = newValue;
       return;
     }
