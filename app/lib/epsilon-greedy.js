@@ -23,7 +23,6 @@ var EpsilonGreedy = function () {
       this.nArms = nArms;
       this.counts = new Array(this.nArms).fill(0);
       this.values = new Array(this.nArms).fill(0);
-      console.log(this.counts);
     }
   }, {
     key: "selectArm",

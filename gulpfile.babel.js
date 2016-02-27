@@ -22,7 +22,7 @@
 
   //Run Tests
 
-  gulp.task('test', function() {
+  gulp.task('test-js', function() {
     return gulp.src('./test/**/*.js', {read: false})
         .pipe(mocha(
           {
@@ -47,9 +47,9 @@
   });
 
   gulp.task('watch', function() {
-    gulp.watch('./src/**/*.js', ['js', 'test']);
+    gulp.watch('./src/**/*.js', ['pre-test', 'test-js']);
   });
 
-  gulp.task('default', ['js','test','docs','watch']);
+  gulp.task('default', ['js','pre-test','test-js' ,'docs','watch']);
 
-  gulp.task('test', ['pre-test','test-algs']);
+  gulp.task('test', ['pre-test','test-js']);

@@ -13,7 +13,7 @@ describe('peafowl interface', function() {
 
   describe('#addPage()', function() {
     it('removes the page and returns true', function() {
-    removePage('page1');
+    assert.equal(removePage('page1'), true);
     });
   });
 });

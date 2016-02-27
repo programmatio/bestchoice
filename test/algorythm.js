@@ -87,33 +87,33 @@ describe('Epsilon Greedy Algorithm', function() {
     return [simNums, times, chosenArms, rewards, cumulitiveRewards];
 
   };
-
-  describe('Page counters length', function() {
     simulate(algo1, theArms(), 200, 10);
+  describe('Page counters length', function() {
+
     it('should be equal to amount of arms supplied', function() {
       assert.equal(algo1.counts.length, theArms().length);
     });
   });
   describe('Page values length', function() {
-    simulate(algo1, theArms(), 200, 10);
+
     it('should be equal to amount of arms supplied', function() {
       assert.equal(algo1.values.length, theArms().length);  
     });
   });
   describe('Number of arms', function() {
-    simulate(algo1, theArms(), 200, 10);
+
     it('should be equal to amount of arms supplied', function() {
       assert.equal(algo1.nArms, theArms().length);   
     });
   });
   describe('', function() {
-    simulate(algo1, theArms(), 200, 10);
+
     it('adds the page and returns true', function() {
       assert.equal(algo1.counts.indexOf(Math.max(...algo1.counts)), 2);  
     });
   });
   describe('', function() {
-    simulate(algo1, theArms(), 200, 10);
+
     it('at lease 89% of the time, best arm will be pulled', function() {
       assert.isAtLeast(Math.max(...algo1.values), 0.89);    
     });
