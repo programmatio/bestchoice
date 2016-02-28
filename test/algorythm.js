@@ -43,15 +43,12 @@ describe('Epsilon Greedy Algorithm', function() {
     }
   }
 
-  var theArms = function(){
-    var means = [0.1, 0.8, 0.9, 0.1, 0.1];
-    var nArms = means.length;
-    var arms = [];
-    for (var i = 0; i < means.length; i++) {
-      arms[i] = new BernoulliArm(means[i]);
-    }
-    return arms;
-  };
+  var means = [0.1, 0.8, 0.9, 0.1, 0.1];
+  var nArms = means.length;
+  var arms = [];
+  for (var i = 0; i < means.length; i++) {
+    arms[i] = new BernoulliArm(means[i]);
+  }
 
   var simulate = function(algo, arms, numSims, horizon){
     var testLength = numSims * horizon;
@@ -63,10 +60,8 @@ describe('Epsilon Greedy Algorithm', function() {
     var index = 1;
     algo.initialize(arms.length);
     for  (var sim = 1; sim < testLength + 1; sim++) {
-
+      index = (sim - 1) * horizon + t - 1;
       for (var t = 1; t < horizon + 1; t++) {
-
-        index = (sim - 1) * horizon + t - 1;
         simNums[index] = sim;
         times[index] = t;
         var chosenArm = algo.selectArm();
@@ -87,23 +82,26 @@ describe('Epsilon Greedy Algorithm', function() {
     return [simNums, times, chosenArms, rewards, cumulitiveRewards];
 
   };
-    simulate(algo1, theArms(), 200, 10);
+
+
+    simulate(algo1, arms, 200, 10);
+
   describe('Page counters length', function() {
 
     it('should be equal to amount of arms supplied', function() {
-      assert.equal(algo1.counts.length, theArms().length);
+      assert.equal(algo1.counts.length, arms.length);
     });
   });
   describe('Page values length', function() {
 
     it('should be equal to amount of arms supplied', function() {
-      assert.equal(algo1.values.length, theArms().length);  
+      assert.equal(algo1.values.length, arms.length);  
     });
   });
   describe('Number of arms', function() {
 
     it('should be equal to amount of arms supplied', function() {
-      assert.equal(algo1.nArms, theArms().length);   
+      assert.equal(algo1.nArms, arms.length);   
     });
   });
   describe('', function() {

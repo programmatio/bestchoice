@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>algorythm.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>algorythm.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'chai'</span>).assert;
+
+describe(<span class="hljs-string">'Epsilon Greedy Algorithm'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+
+  <span class="hljs-keyword">let</span> EpsilonGreedy = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../src/lib/epsilon-greedy.js'</span>);
+  <span class="hljs-keyword">let</span> UCB1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../src/lib/ucb1.js'</span>);
+
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">mode</span>(<span class="hljs-params">array</span>)</span>{
+    <span class="hljs-keyword">if</span>(array.length == <span class="hljs-number">0</span>)
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
+    <span class="hljs-keyword">var</span> modeMap = {};
+    <span class="hljs-keyword">var</span> maxEl = array[<span class="hljs-number">0</span>], maxCount = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; array.length; i++)
+    {
+      <span class="hljs-keyword">var</span> el = array[i];
+      <span class="hljs-keyword">if</span>(modeMap[el] == <span class="hljs-literal">null</span>)
+        modeMap[el] = <span class="hljs-number">1</span>;
+      <span class="hljs-keyword">else</span>
+        modeMap[el]++;  
+      <span class="hljs-keyword">if</span>(modeMap[el] &gt; maxCount)
+      {
+        maxEl = el;
+        maxCount = modeMap[el];
+      }
+    }
+    <span class="hljs-keyword">return</span> maxEl;
+  }
+
+  <span class="hljs-keyword">var</span> algo1 = <span class="hljs-keyword">new</span> EpsilonGreedy(<span class="hljs-number">0.1</span>, [], []);
+
+  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BernoulliArm</span> </span>{
+
+    <span class="hljs-keyword">constructor</span>(p){
+      <span class="hljs-keyword">this</span>.p = p;
+    }
+
+    draw(){
+      <span class="hljs-keyword">if</span> (<span class="hljs-built_in">Math</span>.random() &gt; <span class="hljs-keyword">this</span>.p) {
+        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+      } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+      }
+    }
+  }
+
+  <span class="hljs-keyword">var</span> means = [<span class="hljs-number">0.1</span>, <span class="hljs-number">0.8</span>, <span class="hljs-number">0.9</span>, <span class="hljs-number">0.1</span>, <span class="hljs-number">0.1</span>];
+  <span class="hljs-keyword">var</span> nArms = means.length;
+  <span class="hljs-keyword">var</span> arms = [];
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; means.length; i++) {
+    arms[i] = <span class="hljs-keyword">new</span> BernoulliArm(means[i]);
+  }
+
+  <span class="hljs-keyword">var</span> simulate = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">algo, arms, numSims, horizon</span>)</span>{
+    <span class="hljs-keyword">var</span> testLength = numSims * horizon;
+    <span class="hljs-keyword">var</span> chosenArms = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(testLength).fill(<span class="hljs-number">0</span>);
+    <span class="hljs-keyword">var</span> rewards = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(testLength).fill(<span class="hljs-number">0</span>);
+    <span class="hljs-keyword">var</span> cumulitiveRewards = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(testLength).fill(<span class="hljs-number">0</span>);
+    <span class="hljs-keyword">var</span> simNums = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(testLength).fill(<span class="hljs-number">0</span>);
+    <span class="hljs-keyword">var</span> times = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(testLength).fill(<span class="hljs-number">0</span>);
+    <span class="hljs-keyword">var</span> index = <span class="hljs-number">1</span>;
+    algo.initialize(arms.length);
+    <span class="hljs-keyword">for</span>  (<span class="hljs-keyword">var</span> sim = <span class="hljs-number">1</span>; sim &lt; testLength + <span class="hljs-number">1</span>; sim++) {
+      index = (sim - <span class="hljs-number">1</span>) * horizon + t - <span class="hljs-number">1</span>;
+      <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> t = <span class="hljs-number">1</span>; t &lt; horizon + <span class="hljs-number">1</span>; t++) {
+        simNums[index] = sim;
+        times[index] = t;
+        <span class="hljs-keyword">var</span> chosenArm = algo.selectArm();
+        chosenArms[index] = chosenArm;
+        <span class="hljs-keyword">var</span> reward = arms[chosenArms[index]].draw();
+        rewards[index] = reward;
+
+        <span class="hljs-keyword">if</span> (t === <span class="hljs-number">1</span>) {
+          cumulitiveRewards[index] = reward;
+        } <span class="hljs-keyword">else</span> {
+          cumulitiveRewards[index] = cumulitiveRewards[index - <span class="hljs-number">1</span>] + reward;
+        }
+        
+        algo.update(chosenArm, reward);
+      }
+    }
+    
+    <span class="hljs-keyword">return</span> [simNums, times, chosenArms, rewards, cumulitiveRewards];
+
+  };
+
+
+    simulate(algo1, arms, <span class="hljs-number">200</span>, <span class="hljs-number">10</span>);
+
+  describe(<span class="hljs-string">'Page counters length'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+
+    it(<span class="hljs-string">'should be equal to amount of arms supplied'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+      assert.equal(algo1.counts.length, arms.length);
+    });
+  });
+  describe(<span class="hljs-string">'Page values length'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+
+    it(<span class="hljs-string">'should be equal to amount of arms supplied'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+      assert.equal(algo1.values.length, arms.length);  
+    });
+  });
+  describe(<span class="hljs-string">'Number of arms'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+
+    it(<span class="hljs-string">'should be equal to amount of arms supplied'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+      assert.equal(algo1.nArms, arms.length);   
+    });
+  });
+  describe(<span class="hljs-string">''</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+
+    it(<span class="hljs-string">'adds the page and returns true'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+      assert.equal(algo1.counts.indexOf(<span class="hljs-built_in">Math</span>.max(...algo1.counts)), <span class="hljs-number">2</span>);  
+    });
+  });
+  describe(<span class="hljs-string">''</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+
+    it(<span class="hljs-string">'at lease 89% of the time, best arm will be pulled'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+      assert.isAtLeast(<span class="hljs-built_in">Math</span>.max(...algo1.values), <span class="hljs-number">0.89</span>);    
+    });
+  });
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

@@ -1,19 +1,17 @@
-var peafowl = require('../src/index.js'),
+var bestchoice = require('../src/index.js'),
     assert = require('chai').assert,
-    addPage = peafowl.addPage,
-    removePage = peafowl.removePage;
+    addCampaign = bestchoice.addCampaign,
+    getCampaign = bestchoice.getCampaign,
+    removeCampaign = bestchoice.removeCampaign,
+    getCampaigns = bestchoice.getCampaigns,
+    loadCampaigns = bestchoice.loadCampaigns;
 
-describe('peafowl interface', function() {
-  describe('#removePage()', function() {
-    it('should add page to group', function() {
-    assert.equal(addPage('page1'), true);
+    addCampaign('t001', 'https://www.hello.com', 'main', ['main?v=a', 'main?v=b', 'main?v=c', 'main?v=d']);
 
-    });
-  });
-
-  describe('#addPage()', function() {
+describe('bestchoice interface', function() {
+  describe('#removeCampaign()', function() {
     it('removes the page and returns true', function() {
-    assert.equal(removePage('page1'), true);
+    assert.equal(removeCampaign('t001'), true);
     });
   });
 });
