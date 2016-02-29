@@ -6,12 +6,24 @@ var bestchoice = require('../src/index.js'),
     getCampaigns = bestchoice.getCampaigns,
     loadCampaigns = bestchoice.loadCampaigns;
 
-    addCampaign('t001', 'https://www.hello.com', 'main', ['main?v=a', 'main?v=b', 'main?v=c', 'main?v=d']);
+
+    bestchoice.addCampaign('t00000001',
+                           'https://www.example.com',
+                           'register',
+                           ['register?v=1','register?v=2', 'register?v=3', 'register?v=4']);
+
+    bestchoice.addCampaign('t00000002',
+                           'https://www.example.com',
+                           'login',
+                           ['login?v=1','login?v=2', 'login?v=3', 'login?v=4']);
+
+    bestchoice.getCampaign('t00000001').init();
+    bestchoice.getCampaign('t00000002').init();
 
 describe('bestchoice interface', function() {
   describe('#removeCampaign()', function() {
     it('removes the page and returns true', function() {
-    assert.equal(removeCampaign('t001'), true);
+    //assert.equal(removeCampaign('page1'), true);
     });
   });
 });

@@ -70,9 +70,7 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>  addCampaign: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">id, baseURL, target, variants</span>) </span>{
-    campaigns.push( id = <span class="hljs-keyword">new</span> Campaign(id, baseURL, target, variants).init());
-
-  },</pre></div></div>
+    campaigns.push( id = <span class="hljs-keyword">new</span> Campaign(id, baseURL, target, variants));</pre></div></div>
             
         </li>
         
@@ -82,6 +80,21 @@
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>this.init();</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <p>Get page from the Campaign</p>
 
@@ -98,11 +111,11 @@
         </li>
         
         
-        <li id="section-4">
+        <li id="section-5">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>Remove page from the Campaign</p>
 
@@ -114,18 +127,17 @@
     <span class="hljs-keyword">var</span> findId = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">campaign</span>) </span>{ 
         <span class="hljs-keyword">return</span> campaign.id === _id;
     }
-    campaigns.splice(campaigns.indexOf(campaigns.find(findId)),<span class="hljs-number">1</span>);
-    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    <span class="hljs-keyword">return</span> campaigns.splice(campaigns.indexOf(campaigns.find(findId)),<span class="hljs-number">1</span>);
   },</pre></div></div>
             
         </li>
         
         
-        <li id="section-5">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>Return all availible campaigns</p>
 
@@ -138,11 +150,11 @@
         </li>
         
         
-        <li id="section-6">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>Load campaigns from JSON file</p>
 

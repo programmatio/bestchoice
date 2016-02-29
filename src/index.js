@@ -26,8 +26,8 @@ module.exports = {
 
   // Add page to the Campaign
   addCampaign: function(id, baseURL, target, variants) {
-    campaigns.push( id = new Campaign(id, baseURL, target, variants).init());
-
+    campaigns.push( id = new Campaign(id, baseURL, target, variants));
+    //this.init();
   },
 
   // Get page from the Campaign
@@ -46,8 +46,7 @@ module.exports = {
     var findId = function (campaign) { 
         return campaign.id === _id;
     }
-    campaigns.splice(campaigns.indexOf(campaigns.find(findId)),1);
-    return true;
+    return campaigns.splice(campaigns.indexOf(campaigns.find(findId)),1);
   },
 
   // Return all availible campaigns

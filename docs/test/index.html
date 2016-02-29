@@ -39,16 +39,95 @@
     loadCampaigns = bestchoice.loadCampaigns;
 
 
-    addCampaign(<span class="hljs-string">'t001'</span>, <span class="hljs-string">'https://www.hello.com'</span>, <span class="hljs-string">'main'</span>, [<span class="hljs-string">'main?v=a'</span>, <span class="hljs-string">'main?v=b'</span>, <span class="hljs-string">'main?v=c'</span>, <span class="hljs-string">'main?v=d'</span>]);
+    bestchoice.addCampaign(<span class="hljs-string">'t00000001'</span>,
+                           <span class="hljs-string">'https://www.example.com'</span>,
+                           <span class="hljs-string">'register'</span>,
+                           [<span class="hljs-string">'register?v=1'</span>,<span class="hljs-string">'register?v=2'</span>, <span class="hljs-string">'register?v=3'</span>, <span class="hljs-string">'register?v=4'</span>]);
+    <span class="hljs-keyword">var</span> data = <span class="hljs-built_in">JSON</span>.stringify(getCampaigns());
 
+
+    bestchoice.getCampaign(<span class="hljs-string">'t00000001'</span>).init();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>removeCampaign(‘t001’);
+removeCampaign(‘t002’);</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>console.log(data);</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>loadCampaigns(data);</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>console.log(getCampaign(‘t002’));
+getCampaign(‘t002’).init();
+getCampaign(‘t002’).stats.update();
+getCampaign(‘t002’).stats.selectArm(1);
+console.log(getCampaign(‘t002’).stats);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+    <span class="hljs-built_in">console</span>.log(getCampaigns());
 
 
 
 describe(<span class="hljs-string">'bestchoice interface'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
   describe(<span class="hljs-string">'#removeCampaign()'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-    it(<span class="hljs-string">'removes the page and returns true'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-    assert.equal(removeCampaign(<span class="hljs-string">'t001'</span>), <span class="hljs-literal">true</span>);
-    });
+    it(<span class="hljs-string">'removes the page and returns true'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>assert.equal(removeCampaign(‘page1’), true);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    });
   });
 });</pre></div></div>
             
