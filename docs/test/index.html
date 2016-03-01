@@ -30,23 +30,27 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> bestchoice = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../src/index.js'</span>),
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> bc = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../src/index.js'</span>),
     assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'chai'</span>).assert,
-    addCampaign = bestchoice.addCampaign,
-    getCampaign = bestchoice.getCampaign,
-    removeCampaign = bestchoice.removeCampaign,
-    getCampaigns = bestchoice.getCampaigns,
-    loadCampaigns = bestchoice.loadCampaigns;
+    addCampaign = bc.addCampaign,
+    removeCampaign = bc.removeCampaign,
+    getCampaigns = bc.getCampaigns,
+    visit = bc.visit,
+    registerConversion = bc.registerConversion,
+    loadCampaigns = bc.loadCampaigns;
 
-
-    bestchoice.addCampaign(<span class="hljs-string">'t00000001'</span>,
+    bc.addCampaign(<span class="hljs-string">'t00000001'</span>,
                            <span class="hljs-string">'https://www.example.com'</span>,
                            <span class="hljs-string">'register'</span>,
                            [<span class="hljs-string">'register?v=1'</span>,<span class="hljs-string">'register?v=2'</span>, <span class="hljs-string">'register?v=3'</span>, <span class="hljs-string">'register?v=4'</span>]);
-    <span class="hljs-keyword">var</span> data = <span class="hljs-built_in">JSON</span>.stringify(getCampaigns());
 
+    bc.addCampaign(<span class="hljs-string">'t00000002'</span>,
+                           <span class="hljs-string">'https://www.example.com'</span>,
+                           <span class="hljs-string">'login'</span>,
+                           [<span class="hljs-string">'login?v=1'</span>,<span class="hljs-string">'login?v=2'</span>, <span class="hljs-string">'login?v=3'</span>, <span class="hljs-string">'login?v=4'</span>]);
 
-    bestchoice.getCampaign(<span class="hljs-string">'t00000001'</span>).init();</pre></div></div>
+    
+    <span class="hljs-keyword">var</span> test1 = visit(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'login?v=4'</span>);</pre></div></div>
             
         </li>
         
@@ -57,10 +61,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>removeCampaign(‘t001’);
-removeCampaign(‘t002’);</p>
+              <p>console.log(test1);</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>    visit(<span class="hljs-string">'t00000002'</span>,<span class="hljs-string">'login?v=4'</span>, test1);</pre></div></div>
             
         </li>
         
@@ -71,9 +76,13 @@ removeCampaign(‘t002’);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>console.log(data);</p>
+              <p>bc.getCampaign(‘t00000001’).init();
+bc.getCampaign(‘t00000002’).init();</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>
+    <span class="hljs-built_in">console</span>.log(bc.getCampaigns()[<span class="hljs-number">1</span>]);</pre></div></div>
             
         </li>
         
@@ -84,51 +93,30 @@ removeCampaign(‘t002’);</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>loadCampaigns(data);</p>
-
-            </div>
-            
-        </li>
-        
-        
-        <li id="section-5">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
-              </div>
-              <p>console.log(getCampaign(‘t002’));
-getCampaign(‘t002’).init();
-getCampaign(‘t002’).stats.update();
-getCampaign(‘t002’).stats.selectArm(1);
-console.log(getCampaign(‘t002’).stats);</p>
+              <p>console.log(getCampaign(‘t00000002’).stats.selectArm());
+console.log(getCampaign(‘t00000002’).stats.update(3, 1));
+console.log(getCampaign(‘t00000002’).stats.update(3, 1));</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>
-    <span class="hljs-built_in">console</span>.log(getCampaigns());
+describe(<span class="hljs-string">'bc interface'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
 
-
-
-describe(<span class="hljs-string">'bestchoice interface'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+  
   describe(<span class="hljs-string">'#removeCampaign()'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-    it(<span class="hljs-string">'removes the page and returns true'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-6">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
-              </div>
-              <p>assert.equal(removeCampaign(‘page1’), true);</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    });
+    it(<span class="hljs-string">'removes the page and returns true'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    assert.equal(bc.removeCampaign(<span class="hljs-string">'t00000002'</span>), <span class="hljs-literal">true</span>);
+    });
   });
+
+
+  describe(<span class="hljs-string">'#removeCampaign()'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    it(<span class="hljs-string">'removes the page and returns true'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    assert.equal(bc.removeCampaign(<span class="hljs-string">'t00000002'</span>), <span class="hljs-literal">true</span>);
+    });
+  });
+
+
 });</pre></div></div>
             
         </li>

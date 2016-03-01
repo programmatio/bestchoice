@@ -23,13 +23,6 @@ bestchoice.removeCampaign('t00000001');
 ```
 
 
-Getting a specific campaign
-
-```
-bestchoice.getCampaign('t00000001');
-```
-
-
 Getting all availible campaigns
 
 ```
@@ -98,4 +91,3 @@ Loading previously computed campaigns as a current stack
 
 bestchoice.loadCampaign(data);
 ```
-

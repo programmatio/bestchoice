@@ -26,7 +26,7 @@ class EpsilonGreedy {
     var n = this.counts[chosenArm];
     var value = this.values[chosenArm];
     var newValue =  ((n - 1) / n) * value + (1 / n) * reward;
-    this.values[chosenArm] = newValue;
+    return this.values[chosenArm] = newValue;
   }
 }
 
