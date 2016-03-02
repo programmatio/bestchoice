@@ -40,14 +40,15 @@ bc.removeCampaign('t00000001');
 
 Getting all availible campaigns
 Returns all running campaigns as Objects
+
 ```
 bc.getCampaigns('t00000001');
 ```
 
 Saving all availible campaigns as JSON
 Returns all running campaigns
-```
 
+```
 var data = bc.getCampaigns('t00000001');
 ```
 
@@ -66,7 +67,6 @@ Returns page variant to use and unique ID to use as a Cookie.
 
 ```
 bc.visit('t00000001', 'login');
-
 ```
 
 Conversion trigger. Supply with campaign ID, path name, cookie and the amount of reward between 0 and 1.
