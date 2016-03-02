@@ -2,92 +2,56 @@
 bestchoice.js - Self Learning Weighted Multivariate Testing Module
 
 
-### Campaign Managment
+### Campaign Managment Example Code
 
-Adding a campaign
+Adding a new campaign
 
 ```
-bestchoice.addCampaign('t00000001',
+bc.addCampaign('t00000001',
                        'https://www.example.com',
                        'register',
                        ['register?v=1','register?v=2', 'register?v=3', 'register?v=4']);
-
-bestchoice.getCampaign(id).init();
 ```
-
 
 Removing a campaign
 
 ```
-bestchoice.removeCampaign('t00000001');
+bc.removeCampaign('t00000001');
 ```
-
 
 Getting all availible campaigns
-
+Returns all running campaigns as Objects
 ```
-bestchoice.getCampaign('t00000001');
+bc.getCampaigns('t00000001');
+```
+
+Saving all availible campaigns as JSON
+Returns all running campaigns
+```
+
+var data = bc.getCampaigns('t00000001');
 ```
 
 
 Loading previously computed campaigns as a current stack
 
 ```
-
- var data = [
-               {
-                  "id":"t00000001",
-                  "baseURL":"https://www.example.com",
-                  "target":"register",
-                  "variants":[
-                     "register?v=1",
-                     "register?v=2",
-                     "register?v=3",
-                     "register?v=4"
-                  ],
-                  "stats":{
-                     "epsilon":0.1,
-                     "counts":[
-                        0,
-                        0,
-                        0,
-                        0
-                     ],
-                     "values":[
-                        0,
-                        0,
-                        0,
-                        0
-                     ]
-                  }
-               },
-               {
-                  "id":"t00000002",
-                  "baseURL":"https://www.example.com",
-                  "target":"login",
-                  "variants":[
-                     "login?v=1",
-                     "login?v=2",
-                     "login?v=3",
-                     "login?v=4"
-                  ],
-                  "stats":{
-                     "epsilon":0.1,
-                     "counts":[
-                        0,
-                        0,
-                        0,
-                        0
-                     ],
-                     "values":[
-                        0,
-                        0,
-                        0,
-                        0
-                     ]
-                  }
-               }
-            ]
-
-bestchoice.loadCampaign(data);
+bc.loadCampaign(data);
 ```
+
+
+### Campaign Managment Example Code
+
+First visit. Supply with campaign ID and path name.
+Returns page variant to use and unique ID to use as a Cookie.
+
+'''
+bc.visit('t00000001', 'login');
+
+'''
+
+Conversion trigger. Supply with campaign ID, path name, cookie and the amount of reward between 0 and 1.
+'''
+bc.registerConversion(id, variant ,cookie, reward);
+
+'''

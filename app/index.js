@@ -8,15 +8,14 @@ var EpsilonGreedy = require('./lib/epsilon-greedy.js');
 var UCB1 = require('./lib/ucb1.js');
 
 var campaigns = [];
-var visits = [];
 
 var Campaign = function () {
-  function Campaign(id, baseURL, target, variants) {
+  function Campaign(campaignID, baseURL, pathname, variants) {
     _classCallCheck(this, Campaign);
 
-    this.id = id;
+    this.campaignID = campaignID;
     this.baseURL = baseURL;
-    this.target = target;
+    this.pathname = pathname;
     this.variants = variants;
     this.stats = [];
     this.visits = [];
@@ -42,57 +41,76 @@ var Campaign = function () {
 ;
 
 // Get running campaign
-var getCampaign = function getCampaign(id) {
-  var _id = id;
+var getCampaign = function getCampaign(campaignID) {
+  var campaignID = campaignID;
   var findId = function findId(campaign) {
-    return campaign.id === _id;
+    return campaign.campaignID === campaignID;
   };
   return campaigns.find(findId);
 };
 
+var checkForExpiredVisits = function checkForExpiredVisits(campaignID) {
+  var timeNow = new Date().getTime();
+
+  var campaignIndex = campaigns.map(function (e) {
+    return e.campaignID;
+  }).indexOf(campaignID);
+
+  var cleanList = campaigns[campaignIndex].visits.filter(function (e) {
+    var minutesPassed = Math.round((timeNow - e.time) / 1000 / 60);
+
+    if (minutesPassed < 60) {
+      var variant = e.variant;
+      var reward = 0;
+      campaigns[campaignIndex].stats.update(variant, reward);
+      return true;
+    } else {
+      return false;
+    }
+  });
+  //console.log(cleanList);
+
+  //console.log(campaigns[campaignIndex].visits);
+
+  campaigns[campaignIndex].visits = cleanList.slice(0);
+
+  return cleanList;
+};
+
 // Get unconverted visit
-var getVisit = function getVisit(id, cookie) {
-  var _id = getCampaign(id);
-  var _cookie = cookie;
+var getVisit = function getVisit(campaignID, cookie, variant) {
+  var campaign = getCampaign(campaignID);
+  var variantID = campaign.variants.indexOf(variant);
+  var cookie = cookie;
   var findCookie = function findCookie(visit) {
-    return visit.cookie === _cookie;
-  };
-  var _timeNow = new Date().getTime();
-  var _visit = _id.visits.find(findCookie);
-  console.log(_visit);
-
-  var _minutesPassed = Math.round((_timeNow - _visit.time) / 1000 / 60);
-
-  console.log(_minutesPassed < 60);
-  if (_minutesPassed < 60) {
-    _id.visits.indexOf(_id.visits.find(findCookie));
+    return visit.cookie === cookie;
   };
 
-  //splice(campaigns.indexOf(id),1);
-  return console.log();
+  return campaign.variants[campaign.stats.selectArm()];
 };
 
 // Register variant visit
-var registerVisit = function registerVisit(id, variant, cookie) {
+var registerVisit = function registerVisit(campaignID, pathname, cookie) {
   var time = new Date().getTime();
-  var id = getCampaign(id);
-  var variant = id.variants.indexOf(variant);
-  id.visits.push({ time: time, cookie: cookie, variant: variant });
+  var campaignID = getCampaign(campaignID);
+  var variant = campaignID.variants.indexOf(pathname);
+  campaignID.visits.push({ time: time, cookie: cookie, variant: variant });
   return cookie;
 };
 
 module.exports = {
 
   // Add page to the Campaign
-  addCampaign: function addCampaign(id, baseURL, target, variants) {
-    var _id = id;
-    campaigns.push(id = new Campaign(id, baseURL, target, variants));
-    getCampaign(_id).init();
+  addCampaign: function addCampaign(campaignID, baseURL, pathname, variants) {
+    var _campaignID = campaignID;
+    campaigns.push(campaignID = new Campaign(campaignID, baseURL, pathname, variants));
+    getCampaign(_campaignID).init();
+    return true;
   },
 
   // Remove page from the Campaign
-  removeCampaign: function removeCampaign(id) {
-    campaigns.splice(campaigns.indexOf(id), 1);
+  removeCampaign: function removeCampaign(campaignID) {
+    campaigns.splice(campaigns.indexOf(campaignID), 1);
     return true;
   },
 
@@ -101,34 +119,56 @@ module.exports = {
     return campaigns;
   },
 
+  // Return all availible campaigns as JSON
+  saveCampaigns: function saveCampaigns() {
+    return JSON.stringify(campaigns);
+  },
+
   // Load campaigns from JSON file
   loadCampaigns: function loadCampaigns(data) {
     campaigns = JSON.parse(data);
+    return true;
   },
 
   // Register visit
-  visit: function visit(id, variant) {
+  visit: function visit(campaignID, pathname) {
     var cookie = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
 
-    var _id = id;
-    var _variant = variant;
+    var campaignID = campaignID;
+    var campaign = getCampaign(campaignID);
+
+    var variant = campaign.variants[campaign.stats.selectArm()];;
+    checkForExpiredVisits(campaignID);
     if (cookie === 0) {
-      var _cookie = Math.random().toString(36).slice(2);
-      registerVisit(_id, _variant, _cookie);
-      return _cookie;
+      var cookie = Math.random().toString(36).slice(2);
+      registerVisit(campaignID, variant, cookie);
+      return { pageVariant: getVisit(campaignID, cookie, variant), cookie: cookie };
     } else {
-      var _cookie = cookie;
-      return getVisit(_id, _cookie);
+      var cookie = cookie;
+      return getVisit(campaignID, cookie, pathname);
     }
   },
 
   // Register variant conversion
-  registerConversion: function registerConversion(id, variant, cookie) {
+  registerConversion: function registerConversion(campaignID, variant, cookie) {
     var reward = arguments.length <= 3 || arguments[3] === undefined ? 1 : arguments[3];
 
-    var id = getCampaign(id);
-    var variant = id.variants.indexOf(variant);
-    id.stats.update(variant, reward);
+    var campaign = getCampaign(campaignID);
+    var variantID = campaign.variants.indexOf(variant);
+    var cookie = cookie;
+    var findCookie = function findCookie(visit) {
+      return visit.cookie === cookie;
+    };
+
+    var cookiePosition = campaign.visits.map(function (e) {
+      return e.cookie;
+    }).indexOf(cookie);
+    if (cookiePosition === -1) {
+      return registerVisit(campaignID, variant, cookie);
+    }
+    var variant = campaign.variants.indexOf(variant);
+    campaign.stats.update(variant, reward);
+    campaign.visits.splice(cookiePosition, 1);
     return true;
   }
 

@@ -1,11 +1,6 @@
-var bc = require('../src/index.js'),
-    assert = require('chai').assert,
-    addCampaign = bc.addCampaign,
-    removeCampaign = bc.removeCampaign,
-    getCampaigns = bc.getCampaigns,
-    visit = bc.visit,
-    registerConversion = bc.registerConversion,
-    loadCampaigns = bc.loadCampaigns;
+var bc = require('../src/index.js');
+var assert = require('chai').assert;
+
 
     bc.addCampaign('t00000001',
                            'https://www.example.com',
@@ -36,12 +31,36 @@ describe('bc interface', function() {
     });
   });
 
-    var test1 = visit('t00000002', 'login?v=4');
 
-    visit('t00000002','login?v=4', test1);
+    bc.visit('t00000002', 'login?v=4');
 
-    bc.getCampaigns()[1];
+    var test1 = bc.visit('t00000002', 'login?v=4');
 
+    bc.visit('t00000002', 'login');
+
+    bc.visit('t00000002', 'login');
+    bc.visit('t00000002', 'login');
+    console.log(bc.visit('t00000002', 'login', test1));
+
+    // registerConversion(id, variant ,cookie, reward);
+    // console.log(registerConversion('t00000002','login?v=4', test1, 0.1));
+    // console.log(registerConversion('t00000002','login?v=4', test1, 1));
+  bc.registerConversion('t00000002','login?v=4', test1, 0.5);
+  bc.registerConversion('t00000002','login?v=4', test1, 0.1);
+  bc.registerConversion('t00000002','login?v=4', test1, 1);
+  bc.registerConversion('t00000002','login?v=4', test1, 1);
+  bc.registerConversion('t00000002','login?v=4', test1, 1);
+  bc.registerConversion('t00000002','login?v=4', test1, 0.5);
+  //bc.visit('t00000002','login', test1);
+  //var weight = [0.5, 0.2, 0.8, 0.4]
+
+  // for (var i = 100 - 1; i >= 0; i--) {
+  //   bc.visit('t00000002','login');
+  //   bc.registerConversion('t00000002',('login?v='+Math.floor(Math.random() * 4 + 1)), test1, Math.random());
+  // }
+   console.log(bc.getCampaigns()[1].stats);
+    // console.log(bc.getCampaigns()[1].values);
+  //   console.log(bc.getCampaigns()[1].visits);
 
 });
 

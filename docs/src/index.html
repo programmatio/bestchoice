@@ -34,17 +34,15 @@
 <span class="hljs-keyword">let</span> UCB1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./lib/ucb1.js'</span>);
 
 <span class="hljs-keyword">var</span> campaigns = [];
-<span class="hljs-keyword">var</span> visits = [];
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Campaign</span></span>{
-  <span class="hljs-keyword">constructor</span>(id, baseURL, target, variants){
-    <span class="hljs-keyword">this</span>.id = id;
+  <span class="hljs-keyword">constructor</span>(campaignID, baseURL, pathname, variants){
+    <span class="hljs-keyword">this</span>.campaignID = campaignID;
     <span class="hljs-keyword">this</span>.baseURL = baseURL;
-    <span class="hljs-keyword">this</span>.target = target;
+    <span class="hljs-keyword">this</span>.pathname = pathname;
     <span class="hljs-keyword">this</span>.variants = variants;
     <span class="hljs-keyword">this</span>.stats = [];
     <span class="hljs-keyword">this</span>.visits = [];
-
   };
   init(counts = <span class="hljs-number">0</span>, values = <span class="hljs-number">0</span>){
     <span class="hljs-keyword">var</span> len = <span class="hljs-keyword">this</span>.variants.length;
@@ -68,13 +66,37 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> getCampaign = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">id</span>) </span>{
-  <span class="hljs-keyword">var</span> _id = id;
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> getCampaign = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">campaignID</span>) </span>{
+  <span class="hljs-keyword">var</span> campaignID = campaignID;
   <span class="hljs-keyword">var</span> findId = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">campaign</span>) </span>{ 
-      <span class="hljs-keyword">return</span> campaign.id === _id;
+    <span class="hljs-keyword">return</span> campaign.campaignID === campaignID;
   }
   <span class="hljs-keyword">return</span> campaigns.find(findId);
-};</pre></div></div>
+};
+
+<span class="hljs-keyword">var</span> checkForExpiredVisits = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">campaignID</span>)</span>{
+  <span class="hljs-keyword">var</span> timeNow = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>().getTime();
+
+  <span class="hljs-keyword">var</span> campaignIndex = campaigns.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) </span>{
+    <span class="hljs-keyword">return</span> e.campaignID;
+
+
+  }).indexOf(campaignID);
+
+
+  <span class="hljs-keyword">var</span> cleanList = campaigns[campaignIndex].visits.filter(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) </span>{
+    <span class="hljs-keyword">var</span> minutesPassed =   <span class="hljs-built_in">Math</span>.round(((timeNow - e.time ) / <span class="hljs-number">1000</span>)/<span class="hljs-number">60</span>);
+
+    <span class="hljs-keyword">if</span> (minutesPassed &lt; <span class="hljs-number">60</span>) {
+      <span class="hljs-keyword">var</span> variant = e.variant;
+      <span class="hljs-keyword">var</span> reward = <span class="hljs-number">0</span>;
+      campaigns[campaignIndex].stats.update(variant, reward);
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    }
+
+  });</pre></div></div>
             
         </li>
         
@@ -85,26 +107,9 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Get unconverted visit </p>
+              <p>console.log(cleanList);</p>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> getVisit = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">id, cookie</span>) </span>{
-  <span class="hljs-keyword">var</span> _id = getCampaign(id);
-  <span class="hljs-keyword">var</span> _cookie = cookie;
-  <span class="hljs-keyword">var</span> findCookie = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">visit</span>) </span>{ 
-      <span class="hljs-keyword">return</span> visit.cookie === _cookie;
-  }
-  <span class="hljs-keyword">var</span> _timeNow = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>().getTime();
-  <span class="hljs-keyword">var</span> _visit = _id.visits.find(findCookie);
-  <span class="hljs-built_in">console</span>.log(_visit);
-
-  <span class="hljs-keyword">var</span> _minutesPassed =   <span class="hljs-built_in">Math</span>.round(((_timeNow - _visit.time ) / <span class="hljs-number">1000</span>)/<span class="hljs-number">60</span>);
-
-  <span class="hljs-built_in">console</span>.log(_minutesPassed &lt; <span class="hljs-number">60</span>);
-  <span class="hljs-keyword">if</span> (_minutesPassed &lt; <span class="hljs-number">60</span>) {
-    _id.visits.indexOf(_id.visits.find(findCookie));
-  };</pre></div></div>
             
         </li>
         
@@ -115,12 +120,16 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>splice(campaigns.indexOf(id),1);</p>
+              <p>console.log(campaigns[campaignIndex].visits);</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">return</span> <span class="hljs-built_in">console</span>.log();
-};</pre></div></div>
+            <div class="content"><div class='highlight'><pre>
+  campaigns[campaignIndex].visits = cleanList.slice(<span class="hljs-number">0</span>);
+
+  <span class="hljs-keyword">return</span> cleanList;
+
+}</pre></div></div>
             
         </li>
         
@@ -131,20 +140,21 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>Register variant visit</p>
+              <p>Get unconverted visit </p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> registerVisit = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">id, variant, cookie</span>) </span>{
-  <span class="hljs-keyword">var</span> time = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>().getTime();
-  <span class="hljs-keyword">var</span> id = getCampaign(id);
-  <span class="hljs-keyword">var</span> variant = id.variants.indexOf(variant);
-  id.visits.push({time:time, cookie:cookie, variant:variant})
-  <span class="hljs-keyword">return</span> cookie;
-};
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> getVisit = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">campaignID, cookie, variant</span>) </span>{
+  <span class="hljs-keyword">var</span> campaign = getCampaign(campaignID);
+  <span class="hljs-keyword">var</span> variantID = campaign.variants.indexOf(variant);
+  <span class="hljs-keyword">var</span> cookie = cookie;
+  <span class="hljs-keyword">var</span> findCookie = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">visit</span>) </span>{ 
+    <span class="hljs-keyword">return</span> visit.cookie === cookie;
+  }
 
+  <span class="hljs-keyword">return</span> campaign.variants[campaign.stats.selectArm()];
 
-<span class="hljs-built_in">module</span>.exports = {</pre></div></div>
+};</pre></div></div>
             
         </li>
         
@@ -155,15 +165,19 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>Add page to the Campaign</p>
+              <p>Register variant visit</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  addCampaign: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">id, baseURL, target, variants</span>) </span>{
-    <span class="hljs-keyword">var</span> _id = id;
-    campaigns.push( id = <span class="hljs-keyword">new</span> Campaign(id, baseURL, target, variants));
-    getCampaign(_id).init();
-  },</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> registerVisit = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">campaignID, pathname, cookie</span>) </span>{
+  <span class="hljs-keyword">var</span> time = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>().getTime();
+  <span class="hljs-keyword">var</span> campaignID = getCampaign(campaignID);
+  <span class="hljs-keyword">var</span> variant = campaignID.variants.indexOf(pathname);
+  campaignID.visits.push({time:time, cookie:cookie, variant:variant})
+  <span class="hljs-keyword">return</span> cookie;
+};
+
+<span class="hljs-built_in">module</span>.exports = {</pre></div></div>
             
         </li>
         
@@ -174,12 +188,14 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <p>Remove page from the Campaign</p>
+              <p>Add page to the Campaign</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  removeCampaign: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">id</span>) </span>{
-    campaigns.splice(campaigns.indexOf(id),<span class="hljs-number">1</span>);
+            <div class="content"><div class='highlight'><pre>  addCampaign: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">campaignID, baseURL, pathname, variants</span>) </span>{
+    <span class="hljs-keyword">var</span> _campaignID = campaignID;
+    campaigns.push( campaignID = <span class="hljs-keyword">new</span> Campaign(campaignID, baseURL, pathname, variants));
+    getCampaign(_campaignID).init();
     <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
   },</pre></div></div>
             
@@ -192,12 +208,13 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <p>Return all availible campaigns</p>
+              <p>Remove page from the Campaign</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  getCampaigns: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">return</span> campaigns;
+            <div class="content"><div class='highlight'><pre>  removeCampaign: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">campaignID</span>) </span>{
+    campaigns.splice(campaigns.indexOf(campaignID),<span class="hljs-number">1</span>);
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
   },</pre></div></div>
             
         </li>
@@ -209,12 +226,12 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
-              <p>Load campaigns from JSON file</p>
+              <p>Return all availible campaigns</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  loadCampaigns: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) </span>{
-    campaigns = <span class="hljs-built_in">JSON</span>.parse(data);
+            <div class="content"><div class='highlight'><pre>  getCampaigns: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> campaigns;
   },</pre></div></div>
             
         </li>
@@ -226,21 +243,12 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
-              <p>Register visit</p>
+              <p>Return all availible campaigns as JSON</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  visit: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">id, variant, cookie = 0</span>)</span>{
-    <span class="hljs-keyword">var</span> _id = id;
-    <span class="hljs-keyword">var</span> _variant = variant;
-    <span class="hljs-keyword">if</span> (cookie === <span class="hljs-number">0</span>) {
-      <span class="hljs-keyword">var</span> _cookie = <span class="hljs-built_in">Math</span>.random().toString(<span class="hljs-number">36</span>).slice(<span class="hljs-number">2</span>);
-      registerVisit(_id, _variant, _cookie);
-      <span class="hljs-keyword">return</span> _cookie;
-    } <span class="hljs-keyword">else</span> {
-      <span class="hljs-keyword">var</span> _cookie = cookie;
-      <span class="hljs-keyword">return</span> getVisit(_id, _cookie);
-    }
+            <div class="content"><div class='highlight'><pre>  saveCampaigns: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">JSON</span>.stringify(campaigns);
   },</pre></div></div>
             
         </li>
@@ -252,14 +260,73 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
+              <p>Load campaigns from JSON file</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  loadCampaigns: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) </span>{
+    campaigns = <span class="hljs-built_in">JSON</span>.parse(data);
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+  },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Register visit</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  visit: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">campaignID, pathname, cookie = 0</span>)</span>{
+    <span class="hljs-keyword">var</span> campaignID = campaignID;
+    <span class="hljs-keyword">var</span> campaign = getCampaign(campaignID);  
+    
+    <span class="hljs-keyword">var</span> variant = campaign.variants[campaign.stats.selectArm()];;
+    checkForExpiredVisits(campaignID);
+    <span class="hljs-keyword">if</span> (cookie === <span class="hljs-number">0</span>) {
+      <span class="hljs-keyword">var</span> cookie = <span class="hljs-built_in">Math</span>.random().toString(<span class="hljs-number">36</span>).slice(<span class="hljs-number">2</span>);
+      registerVisit(campaignID, variant, cookie);
+      <span class="hljs-keyword">return</span> {pageVariant:getVisit(campaignID, cookie, variant), cookie:cookie}
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-keyword">var</span> cookie = cookie;
+      <span class="hljs-keyword">return</span> getVisit(campaignID, cookie, pathname);
+    }
+
+  },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
               <p>Register variant conversion</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  registerConversion : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">id, variant, cookie, reward = 1</span>) </span>{
-    <span class="hljs-keyword">var</span> id = getCampaign(id);
-    <span class="hljs-keyword">var</span> variant = id.variants.indexOf(variant);
-    id.stats.update(variant, reward);
+            <div class="content"><div class='highlight'><pre>  registerConversion : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">campaignID, variant, cookie, reward = 1</span>) </span>{
+    <span class="hljs-keyword">var</span> campaign = getCampaign(campaignID);  
+    <span class="hljs-keyword">var</span> variantID = campaign.variants.indexOf(variant);
+    <span class="hljs-keyword">var</span> cookie = cookie;
+    <span class="hljs-keyword">var</span> findCookie = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">visit</span>) </span>{ 
+      <span class="hljs-keyword">return</span> visit.cookie === cookie;
+    }
+
+    <span class="hljs-keyword">var</span> cookiePosition = campaign.visits.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) </span>{ <span class="hljs-keyword">return</span> e.cookie; }).indexOf(cookie);
+    <span class="hljs-keyword">if</span> (cookiePosition === <span class="hljs-number">-1</span>){
+      <span class="hljs-keyword">return</span> registerVisit(campaignID, variant, cookie)
+    }
+    <span class="hljs-keyword">var</span> variant = campaign.variants.indexOf(variant);
+    campaign.stats.update(variant, reward);
+    campaign.visits.splice(cookiePosition, <span class="hljs-number">1</span>);
     <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
   }
 
