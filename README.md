@@ -1,5 +1,5 @@
 # bestchoice.js
-## Self Learning Weighted Multivariate Testing Module
+Self Learning Weighted Multivariate Testing Module
 
 
 
@@ -7,16 +7,16 @@
 
 Type in terminal to install
 
-'''
+```
 npm install bestchoice
-'''
+```
 
 
 In your index.js and add
 
-'''
+```
 var bc = require('bestchoice');
-'''
+```
 
 ### Campaign Managment Example Code
 
@@ -64,14 +64,14 @@ bc.loadCampaign(data);
 First visit. Supply with campaign ID and path name.
 Returns page variant to use and unique ID to use as a Cookie.
 
-'''
+```
 bc.visit('t00000001', 'login');
 
-'''
+```
 
 Conversion trigger. Supply with campaign ID, path name, cookie and the amount of reward between 0 and 1.
 
-'''
+```
 bc.registerConversion(id, variant ,cookie, reward);
 
-'''
+```
