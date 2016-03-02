@@ -2,16 +2,17 @@
   "name": "bestchoice",
   "version": "0.0.1",
   "description": "Peafowl.js - Self Learning Weighted Multivariate Testing Tool",
-  "main": "index.js",
+  "main": "app/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha /test"
   },
   "repository": {
     "type": "git",
     "url": "git+https://programmatio@github.com/programmatio/bestchoice.git"
   },
   "keywords": [
-    "ab",
+    "ab test",
+    "split test",
     "multivariate",
     "testing",
     "optimisation"
