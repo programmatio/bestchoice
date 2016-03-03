@@ -73,5 +73,4 @@ Conversion trigger. Supply with campaign ID, path name, cookie and the amount of
 
 ```
 bc.registerConversion(id, variant ,cookie, reward);
-
 ```

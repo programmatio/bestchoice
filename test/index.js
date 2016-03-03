@@ -28,13 +28,13 @@ describe('bc interface', function() {
   bc.visit('t00000002', 'login?v=4');
 
   var test1 = bc.visit('t00000002', 'login?v=4');
-
-  bc.visit('t00000002', 'login');
-  bc.registerConversion('t00000002','login?v=4', test1, 0.5);
+  bc.visit('t00000002','login?v=4');
+  var test2 = bc.visit('t00000002', 'login', test1.cookie);
+  bc.registerConversion('t00000002','login?v=4', test1.cookie, 0.5);
   bc.visit('t00000002', 'login');
   bc.visit('t00000002', 'login');
   bc.registerConversion('t00000002','login?v=4', test1, 1);
-
+  //bc.getCampaigns()[1];
 });
 
 
