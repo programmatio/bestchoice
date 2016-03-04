@@ -1,9 +1,9 @@
 var assert = require('chai').assert;
+var EpsilonGreedy = require('../src/lib/epsilon-greedy.js');
+var UCB1 = require('../src/lib/ucb1.js');
 
 describe('Epsilon Greedy Algorithm', function() {
 
-  let EpsilonGreedy = require('../src/lib/epsilon-greedy.js');
-  let UCB1 = require('../src/lib/ucb1.js');
 
   function mode(array){
     if(array.length == 0)

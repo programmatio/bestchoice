@@ -1,16 +1,15 @@
-let EpsilonGreedy = require('./lib/epsilon-greedy.js');
-let UCB1 = require('./lib/ucb1.js');
+var EpsilonGreedy = require('./lib/epsilon-greedy.js');
+var UCB1 = require('./lib/ucb1.js');
 
 var campaigns = [];
 
 class Campaign {
-  constructor(campaignID, baseURL, pathname, variants) {
+  constructor(campaignID, originalURL, variants) {
     this.campaignID = campaignID;
-    this.baseURL = baseURL;
-    this.pathname = pathname;
+    this.originalURL = originalURL;
     this.variants = variants;
     this.stats = [];
-    this.visits = [];
+    this.visitsQue = [];
   };
   init(counts = 0, values = 0) {
     var len = this.variants.length;
@@ -22,7 +21,10 @@ class Campaign {
 };
 
 // Get running campaign
-var getCampaign = function(campaignID) {
+var getCampaignByID = function(campaignID) {
+  var findId = function(campaign) {
+    return campaign.campaignID === campaignID;
+  }
   var campaignID = campaignID;
   var findId = function(campaign) {
     return campaign.campaignID === campaignID;
@@ -38,10 +40,10 @@ var checkForExpiredVisits = function(campaignID) {
   }).indexOf(campaignID);
 
 
-  var cleanList = campaigns[campaignIndex].visits.filter(function(e) {
+  var cleanList = campaigns[campaignIndex].visitsQue.filter(function(e) {
     var minutesPassed = Math.round(((timeNow - e.time) / 1000) / 60);
 
-    if (minutesPassed < 60) {
+    if (minutesPassed > 1) {
       var variant = e.variant;
       var reward = 0;
       campaigns[campaignIndex].stats.update(variant, reward);
@@ -52,15 +54,15 @@ var checkForExpiredVisits = function(campaignID) {
 
   });
 
-  campaigns[campaignIndex].visits = cleanList.slice(0);
+  campaigns[campaignIndex].visitsQue = cleanList.slice(0);
 
   return cleanList;
 
 }
 
 var findCookie = function(cookie) {
-  var campaign = getCampaign(campaignID);
-  var cookiePosition = campaign.visits.map(function(e) {
+  var campaign = getCampaignByID(campaignID);
+  var cookiePosition = campaign.visitsQue.map(function(e) {
     return e.cookie;
   }).indexOf(cookie);
 
@@ -68,7 +70,7 @@ var findCookie = function(cookie) {
 
 // Get unconverted visit 
 var getVisit = function(campaignID, cookie, variant) {
-  var campaign = getCampaign(campaignID);
+  var campaign = getCampaignByID(campaignID);
   var variantID = campaign.variants.indexOf(variant);
   var cookie = cookie;
   var findCookie = function(visit) {
@@ -80,32 +82,34 @@ var getVisit = function(campaignID, cookie, variant) {
 };
 
 // Register variant visit
-var registerVisit = function(campaignID, pathname, cookie) {
+var registerVisit = function(campaignID, originalURL, cookie) {
   var time = new Date().getTime();
-  var campaignID = getCampaign(campaignID);
-  var variant = campaignID.variants.indexOf(pathname);
-  campaignID.visits.push({
+  var campaignID = getCampaignByID(campaignID);
+  var variant = campaignID.variants.indexOf(originalURL);
+
+  console.log(campaignID, originalURL, cookie)
+  campaignID.visitsQue.push({
     time: time,
     cookie: cookie,
     variant: variant
   })
+  console.log(cookie);
   return cookie;
 };
 
 module.exports = {
 
     // Add page to the Campaign
-    addCampaign: function(campaignID, baseURL, pathname, variants) {
+    addCampaign: function(campaignID, originalURL, variants) {
       var _campaignID = campaignID;
-      campaigns.push(campaignID = new Campaign(campaignID, baseURL, pathname, variants));
-      getCampaign(_campaignID).init();
+      campaigns.push(campaignID = new Campaign(campaignID, originalURL, variants));
+      getCampaignByID(_campaignID).init();
       return true;
     },
 
     // Remove page from the Campaign
     removeCampaign: function(campaignID) {
-      campaigns.splice(campaigns.indexOf(campaignID), 1);
-      return true;
+      return campaigns.splice(campaigns.indexOf(getCampaignByID(campaignID)), 1);
     },
 
     // Return all availible campaigns
@@ -126,50 +130,52 @@ module.exports = {
 
 
     // Register visit
-    visit: function(campaignID, pathname, cookie = 0) {
-      var test = campaignID;
-      var campaignID = campaignID;
-      var campaign = getCampaign(campaignID);
-      var pathname = pathname;
+    getPage: function(campaignID, originalURL, cookie = 0) {
 
+      checkForExpiredVisits(campaignID);
+      var campaign = getCampaignByID(campaignID);
       if (cookie === 0) {
-        var variant = campaign.variants[campaign.stats.selectArm()];;
-        checkForExpiredVisits(campaignID);
+        var pageToShow = campaign.variants[campaign.stats.selectArm()];
+        //console.log(pageToShow);
         var cookie = Math.random().toString(36).slice(2);
-        registerVisit(campaignID, variant, cookie);
+        registerVisit(campaignID, pageToShow, cookie);
+
+
         return {
-          pageVariant: getVisit(campaignID, cookie, variant),
-          cookie: cookie
+          pageVariant: getVisit(campaignID, cookie, pageToShow),
+          cookie: cookie,
+          campaignID: campaignID
         }
       } else {
         var cookie = cookie;
-
         return {
-          pageVariant: getVisit(campaignID, cookie, variant),
-          cookie: cookie
+          pageVariant: getVisit(campaignID, cookie, originalURL),
+          cookie: cookie,
+          campaignID: campaignID
         }
       }
 
     },
 
     // Register variant conversion
-    registerConversion: function(campaignID, pathname, cookie, reward = 1) {
-      var campaign = getCampaign(campaignID);
-      var variantID = campaign.variants.indexOf(pathname);
-      var cookie = cookie;
+    registerConversion: function(campaignID, originalURL, cookie, reward = 1) {
+
+      var campaign = getCampaignByID(campaignID);
+      var variantID = campaign.variants.indexOf(originalURL);
       var findCookie = function(visit) {
         return visit.cookie === cookie;
       }
 
-      var cookiePosition = campaign.visits.map(function(e) {
+      var cookiePosition = campaign.visitsQue.map(function(e) {
         return e.cookie;
       }).indexOf(cookie);
       if (cookiePosition === -1) {
-        return registerVisit(campaignID, pathname, cookie)
+        return
       }
-      var variant = campaign.variants.indexOf(pathname);
+      var variant = campaign.variants.indexOf(originalURL);
       campaign.stats.update(variant, reward);
-      campaign.visits.splice(cookiePosition, 1);
+
+      campaign.visitsQue.splice(cookiePosition, 1);
       return true;
     }
 
