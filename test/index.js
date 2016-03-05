@@ -9,13 +9,17 @@ describe('bc interface', function() {
    ['http://www.test1.com/register/a',
     'http://www.test1.com/register/b',
     'http://www.test1.com/register/c',
-    'http://www.test1.com/register/d']);
+    'http://www.test1.com/register/d'],
+    0.1,
+    1);
 
   bc.addCampaign('t00000002',
    'http://www.test2.com/register',
    ['http://www.test2.com/register/a',
     'http://www.test2.com/register/b',
-    'http://www.test2.com/register/c']);
+    'http://www.test2.com/register/c'],
+    0.1,
+    1);
       
   describe('#addCampaign()', function() {
     it('Creates new campaigns, test should return expected values', function() {
@@ -25,14 +29,14 @@ describe('bc interface', function() {
       assert.equal(bc.getCampaigns()[0].campaignID, 't00000001');
       assert.equal(bc.getCampaigns()[1].campaignID, 't00000002');
 
-      assert.equal(bc.getCampaigns()[0].originalURL, 'http://www.test1.com/register');
-      assert.equal(bc.getCampaigns()[1].originalURL, 'http://www.test2.com/register');
+      assert.equal(bc.getCampaigns()[0].targetURL, 'http://www.test1.com/register');
+      assert.equal(bc.getCampaigns()[1].targetURL, 'http://www.test2.com/register');
 
       assert.equal(bc.getCampaigns()[0].variants.length, 4);
       assert.equal(bc.getCampaigns()[1].variants.length, 3);
 
-      assert.equal(bc.getCampaigns()[0].visitsQue.length, 0);
-      assert.equal(bc.getCampaigns()[1].visitsQue.length, 0);
+      assert.equal(bc.getCampaigns()[0].visitsQueue.length, 0);
+      assert.equal(bc.getCampaigns()[1].visitsQueue.length, 0);
 
       assert.equal(bc.getCampaigns()[0].stats instanceof EpsilonGreedy, true);
       assert.equal(bc.getCampaigns()[1].stats instanceof EpsilonGreedy, true);      
@@ -63,7 +67,9 @@ describe('bc interface', function() {
        ['http://www.test1.com/register/a',
         'http://www.test1.com/register/b',
         'http://www.test1.com/register/c',
-        'http://www.test1.com/register/d']);
+        'http://www.test1.com/register/d'],
+        0.1,
+        1);
 
       assert.equal(bc.getCampaigns().length, 2);
 
@@ -74,26 +80,46 @@ describe('bc interface', function() {
   });
 
   describe('#getPage()', function() {
-    it('removes the page and returns spliced Array', function() {
+    it('Adds page to the unconverted visit queue', function() {
 
+      for (var i = 3 - 1; i >= 0; i--) {
+        bc.getPage('t00000002', 'http://www.test2.com/register');
+      }
+      bc.getPage('t00000002', 'http://www.test2.com/register');
       var test1 = bc.getPage('t00000002', 'http://www.test2.com/register');
       var test2 = bc.getPage('t00000002', 'http://www.test2.com/register', test1.cookie);
       var test3 = bc.getPage('t00000002', 'http://www.test2.com/register', test2.cookie);
-
-      //console.log(bc.getCampaigns()[0]);
 
     });
   });
   
   describe('#registerConversion()', function() {
-    it('removes the page and returns spliced Array', function() {
-      var test1 = bc.getPage('t00000002', 'http://www.test2.com/register');
+    it('Registers a conversion and updates the statistics', function() {
+      var test4 = bc.getPage('t00000002', 'http://www.test2.com/register');
 
-     // console.log(test1)
-      // bc.registerConversion('t00000002',
-      //                       'http://www.test2.com/register',
-      //                       test1.cookie);
-     // console.log(bc.getCampaigns()[0]);
+
+      bc.registerConversion(test4.campaignID,
+                            test4.pageVariant,
+                            test4.cookie);
+
+      console.log(bc.getCampaigns()[0]);
+
+
+    });
+  });
+
+  describe('#registerConversion()', function() {
+    it('removes the page and returns spliced Array', function() {
+
+      var test5 = bc.getPage('t00000002', 'http://www.test2.com/register');
+      var test6 = bc.getPage('t00000002', 'http://www.test2.com/register', test5.cookie);
+      console.log(bc.getCampaigns()[0]);
+
+
+      setInterval(function(){ console.log(
+      bc.updateExpiredVisits(test6.campaignID));
+        console.log(bc.getCampaigns()[0]);
+      }, 1000);
 
     });
   });

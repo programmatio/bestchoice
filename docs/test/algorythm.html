@@ -31,11 +31,11 @@
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'chai'</span>).assert;
+<span class="hljs-keyword">var</span> EpsilonGreedy = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../src/lib/epsilon-greedy.js'</span>);
+<span class="hljs-keyword">var</span> UCB1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../src/lib/ucb1.js'</span>);
 
 describe(<span class="hljs-string">'Epsilon Greedy Algorithm'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
 
-  <span class="hljs-keyword">let</span> EpsilonGreedy = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../src/lib/epsilon-greedy.js'</span>);
-  <span class="hljs-keyword">let</span> UCB1 = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../src/lib/ucb1.js'</span>);
 
   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">mode</span>(<span class="hljs-params">array</span>)</span>{
     <span class="hljs-keyword">if</span>(array.length == <span class="hljs-number">0</span>)

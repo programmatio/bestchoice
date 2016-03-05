@@ -10,14 +10,16 @@ var UCB1 = require('./lib/ucb1.js');
 var campaigns = [];
 
 var Campaign = function () {
-  function Campaign(campaignID, originalURL, variants) {
+  function Campaign(campaignID, targetURL, variants, epsilon, frequency) {
     _classCallCheck(this, Campaign);
 
     this.campaignID = campaignID;
-    this.originalURL = originalURL;
+    this.targetURL = targetURL;
     this.variants = variants;
     this.stats = [];
-    this.visitsQue = [];
+    this.visitsQueue = [];
+    this.epsilon = epsilon;
+    this.frequency = frequency;
   }
 
   _createClass(Campaign, [{
@@ -29,7 +31,7 @@ var Campaign = function () {
       var len = this.variants.length;
       var counts = new Array(len).fill(0);
       var values = new Array(len).fill(0);
-      this.stats = new EpsilonGreedy(0.1, counts, values);
+      this.stats = new EpsilonGreedy(this.epsilon, counts, values);
       return true;
     }
   }]);
@@ -41,44 +43,17 @@ var Campaign = function () {
 
 // Get running campaign
 var getCampaignByID = function getCampaignByID(campaignID) {
-  var findId = function findId(campaign) {
-    return campaign.campaignID === campaignID;
-  };
-  var campaignID = campaignID;
+
   var findId = function findId(campaign) {
     return campaign.campaignID === campaignID;
   };
   return campaigns.find(findId);
 };
 
-var checkForExpiredVisits = function checkForExpiredVisits(campaignID) {
-  var timeNow = new Date().getTime();
-
-  var campaignIndex = campaigns.map(function (e) {
-    return e.campaignID;
-  }).indexOf(campaignID);
-
-  var cleanList = campaigns[campaignIndex].visitsQue.filter(function (e) {
-    var minutesPassed = Math.round((timeNow - e.time) / 1000 / 60);
-
-    if (minutesPassed > 1) {
-      var variant = e.variant;
-      var reward = 0;
-      campaigns[campaignIndex].stats.update(variant, reward);
-      return true;
-    } else {
-      return false;
-    }
-  });
-
-  campaigns[campaignIndex].visitsQue = cleanList.slice(0);
-
-  return cleanList;
-};
-
+// Find a page by cookie name
 var findCookie = function findCookie(cookie) {
   var campaign = getCampaignByID(campaignID);
-  var cookiePosition = campaign.visitsQue.map(function (e) {
+  var cookiePosition = campaign.visitsQueue.map(function (e) {
     return e.cookie;
   }).indexOf(cookie);
 };
@@ -96,27 +71,58 @@ var getVisit = function getVisit(campaignID, cookie, variant) {
 };
 
 // Register variant visit
-var registerVisit = function registerVisit(campaignID, originalURL, cookie) {
+var addToVisitQueue = function addToVisitQueue(campaignID, targetURL, cookie) {
   var time = new Date().getTime();
   var campaignID = getCampaignByID(campaignID);
-  var variant = campaignID.variants.indexOf(originalURL);
+  var variant = campaignID.variants.indexOf(targetURL);
 
-  console.log(campaignID, originalURL, cookie);
-  campaignID.visitsQue.push({
+  campaignID.visitsQueue.push({
     time: time,
     cookie: cookie,
     variant: variant
   });
-  console.log(cookie);
   return cookie;
+};
+
+var updateExpiredVisits = function updateExpiredVisits(campaignID) {
+  var timeNow = new Date().getTime();
+  var campaign = getCampaignByID(campaignID);
+  var campaignIndex = campaigns.map(function (e) {
+    return e.campaignID;
+  }).indexOf(campaignID);
+  var queue = campaigns[campaignIndex].visitsQueue;
+
+  //check every item in campaigns visits queue and remove the expired ones while adjusting the weights
+  queue.filter(function (e) {
+    var minutesPassed = Math.round((timeNow - e.time) / 1000 / 60);
+
+    // check if
+    if (minutesPassed > campaign.frequency) {
+      var expiredItem = campaigns[campaignIndex].visitsQueue.splice(queue.indexOf(e), 1);
+      //console.log(campaignIndex + " is the index");
+
+      var variant = e.variant;
+      //console.log(e.variant + "variant to delete");
+
+      var reward = 0;
+      campaigns[campaignIndex].stats.update(variant, reward);
+
+      console.log('removed expired');
+      return true;
+    } else {
+      return false;
+    }
+  });
+
+  //campaigns[campaignIndex].visitsQueue = cleanList.slice(0);
 };
 
 module.exports = {
 
   // Add page to the Campaign
-  addCampaign: function addCampaign(campaignID, originalURL, variants) {
+  addCampaign: function addCampaign(campaignID, targetURL, variants, epsilon, frequency) {
     var _campaignID = campaignID;
-    campaigns.push(campaignID = new Campaign(campaignID, originalURL, variants));
+    campaigns.push(campaignID = new Campaign(campaignID, targetURL, variants, epsilon, frequency));
     getCampaignByID(_campaignID).init();
     return true;
   },
@@ -143,55 +149,75 @@ module.exports = {
   },
 
   // Register visit
-  getPage: function getPage(campaignID, originalURL) {
+  getPage: function getPage(campaignID, targetURL) {
     var cookie = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
 
 
-    checkForExpiredVisits(campaignID);
-    var campaign = getCampaignByID(campaignID);
+    var campaign = getCampaignByID(campaignID); // get current campaign object
+
+    // if cookie is not set
     if (cookie === 0) {
-      var pageToShow = campaign.variants[campaign.stats.selectArm()];
-      //console.log(pageToShow);
+
+      // select the page by using the decision algorythm from availible variants
+      //console.log(campaign.stats.selectArm() + "is variant to show");
+
+      var variantToShow = campaign.variants[campaign.stats.selectArm()];
+
+      // create a random string
       var cookie = Math.random().toString(36).slice(2);
-      registerVisit(campaignID, pageToShow, cookie);
+
+      // add to the unconverted visits queue
+      addToVisitQueue(campaignID, variantToShow, cookie);
 
       return {
-        pageVariant: getVisit(campaignID, cookie, pageToShow),
+
+        // variant URL to show
+        pageVariant: getVisit(campaignID, cookie, variantToShow),
+        // newly generated cookie
         cookie: cookie,
-        campaignID: campaignID
-      };
-    } else {
-      var cookie = cookie;
-      return {
-        pageVariant: getVisit(campaignID, cookie, originalURL),
-        cookie: cookie,
+        // campaign ID
         campaignID: campaignID
       };
     }
+
+    // if cookie already exists return the existing information
+
+    else {
+
+        // TODO reset cookie time in the visit queue
+
+        return {
+          pageVariant: getVisit(campaignID, cookie, targetURL),
+          cookie: cookie,
+          campaignID: campaignID
+        };
+      }
   },
 
   // Register variant conversion
-  registerConversion: function registerConversion(campaignID, originalURL, cookie) {
+  registerConversion: function registerConversion(campaignID, targetURL, cookie) {
     var reward = arguments.length <= 3 || arguments[3] === undefined ? 1 : arguments[3];
 
 
     var campaign = getCampaignByID(campaignID);
-    var variantID = campaign.variants.indexOf(originalURL);
+    var variantID = campaign.variants.indexOf(targetURL);
     var findCookie = function findCookie(visit) {
       return visit.cookie === cookie;
     };
 
-    var cookiePosition = campaign.visitsQue.map(function (e) {
+    var cookiePosition = campaign.visitsQueue.map(function (e) {
       return e.cookie;
     }).indexOf(cookie);
     if (cookiePosition === -1) {
       return;
     }
-    var variant = campaign.variants.indexOf(originalURL);
+    var variant = campaign.variants.indexOf(targetURL);
     campaign.stats.update(variant, reward);
 
-    campaign.visitsQue.splice(cookiePosition, 1);
+    campaign.visitsQueue.splice(cookiePosition, 1);
     return true;
-  }
+  },
+
+  updateExpiredVisits: updateExpiredVisits
 
 };

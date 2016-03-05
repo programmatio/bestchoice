@@ -30,9 +30,9 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">let</span> bc = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../src/index.js'</span>);
-<span class="hljs-keyword">let</span> EpsilonGreedy = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../src/lib/epsilon-greedy.js'</span>);
-<span class="hljs-keyword">let</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'chai'</span>).assert;
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> bc = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../src/index.js'</span>);
+<span class="hljs-keyword">var</span> EpsilonGreedy = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../src/lib/epsilon-greedy.js'</span>);
+<span class="hljs-keyword">var</span> assert = <span class="hljs-built_in">require</span>(<span class="hljs-string">'chai'</span>).assert;
 
 describe(<span class="hljs-string">'bc interface'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
 
@@ -41,13 +41,17 @@ describe(<span class="hljs-string">'bc interface'</span>, <span class="hljs-func
    [<span class="hljs-string">'http://www.test1.com/register/a'</span>,
     <span class="hljs-string">'http://www.test1.com/register/b'</span>,
     <span class="hljs-string">'http://www.test1.com/register/c'</span>,
-    <span class="hljs-string">'http://www.test1.com/register/d'</span>]);
+    <span class="hljs-string">'http://www.test1.com/register/d'</span>],
+    <span class="hljs-number">0.1</span>,
+    <span class="hljs-number">1</span>);
 
   bc.addCampaign(<span class="hljs-string">'t00000002'</span>,
    <span class="hljs-string">'http://www.test2.com/register'</span>,
    [<span class="hljs-string">'http://www.test2.com/register/a'</span>,
     <span class="hljs-string">'http://www.test2.com/register/b'</span>,
-    <span class="hljs-string">'http://www.test2.com/register/c'</span>]);
+    <span class="hljs-string">'http://www.test2.com/register/c'</span>],
+    <span class="hljs-number">0.1</span>,
+    <span class="hljs-number">1</span>);
       
   describe(<span class="hljs-string">'#addCampaign()'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
     it(<span class="hljs-string">'Creates new campaigns, test should return expected values'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
@@ -57,14 +61,14 @@ describe(<span class="hljs-string">'bc interface'</span>, <span class="hljs-func
       assert.equal(bc.getCampaigns()[<span class="hljs-number">0</span>].campaignID, <span class="hljs-string">'t00000001'</span>);
       assert.equal(bc.getCampaigns()[<span class="hljs-number">1</span>].campaignID, <span class="hljs-string">'t00000002'</span>);
 
-      assert.equal(bc.getCampaigns()[<span class="hljs-number">0</span>].originalURL, <span class="hljs-string">'http://www.test1.com/register'</span>);
-      assert.equal(bc.getCampaigns()[<span class="hljs-number">1</span>].originalURL, <span class="hljs-string">'http://www.test2.com/register'</span>);
+      assert.equal(bc.getCampaigns()[<span class="hljs-number">0</span>].targetURL, <span class="hljs-string">'http://www.test1.com/register'</span>);
+      assert.equal(bc.getCampaigns()[<span class="hljs-number">1</span>].targetURL, <span class="hljs-string">'http://www.test2.com/register'</span>);
 
       assert.equal(bc.getCampaigns()[<span class="hljs-number">0</span>].variants.length, <span class="hljs-number">4</span>);
       assert.equal(bc.getCampaigns()[<span class="hljs-number">1</span>].variants.length, <span class="hljs-number">3</span>);
 
-      assert.equal(bc.getCampaigns()[<span class="hljs-number">0</span>].visitsQue.length, <span class="hljs-number">0</span>);
-      assert.equal(bc.getCampaigns()[<span class="hljs-number">1</span>].visitsQue.length, <span class="hljs-number">0</span>);
+      assert.equal(bc.getCampaigns()[<span class="hljs-number">0</span>].visitsQueue.length, <span class="hljs-number">0</span>);
+      assert.equal(bc.getCampaigns()[<span class="hljs-number">1</span>].visitsQueue.length, <span class="hljs-number">0</span>);
 
       assert.equal(bc.getCampaigns()[<span class="hljs-number">0</span>].stats <span class="hljs-keyword">instanceof</span> EpsilonGreedy, <span class="hljs-literal">true</span>);
       assert.equal(bc.getCampaigns()[<span class="hljs-number">1</span>].stats <span class="hljs-keyword">instanceof</span> EpsilonGreedy, <span class="hljs-literal">true</span>);      
@@ -95,7 +99,9 @@ describe(<span class="hljs-string">'bc interface'</span>, <span class="hljs-func
        [<span class="hljs-string">'http://www.test1.com/register/a'</span>,
         <span class="hljs-string">'http://www.test1.com/register/b'</span>,
         <span class="hljs-string">'http://www.test1.com/register/c'</span>,
-        <span class="hljs-string">'http://www.test1.com/register/d'</span>]);
+        <span class="hljs-string">'http://www.test1.com/register/d'</span>],
+        <span class="hljs-number">0.1</span>,
+        <span class="hljs-number">1</span>);
 
       assert.equal(bc.getCampaigns().length, <span class="hljs-number">2</span>);
 
@@ -106,64 +112,47 @@ describe(<span class="hljs-string">'bc interface'</span>, <span class="hljs-func
   });
 
   describe(<span class="hljs-string">'#getPage()'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-    it(<span class="hljs-string">'removes the page and returns spliced Array'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    it(<span class="hljs-string">'Adds page to the unconverted visit queue'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
 
+      <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">3</span> - <span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) {
+        bc.getPage(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'http://www.test2.com/register'</span>);
+      }
+      bc.getPage(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'http://www.test2.com/register'</span>);
       <span class="hljs-keyword">var</span> test1 = bc.getPage(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'http://www.test2.com/register'</span>);
       <span class="hljs-keyword">var</span> test2 = bc.getPage(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'http://www.test2.com/register'</span>, test1.cookie);
-      <span class="hljs-keyword">var</span> test3 = bc.getPage(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'http://www.test2.com/register'</span>, test2.cookie);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-2">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-2">&#182;</a>
-              </div>
-              <p>console.log(bc.getCampaigns()[0]);</p>
+      <span class="hljs-keyword">var</span> test3 = bc.getPage(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'http://www.test2.com/register'</span>, test2.cookie);
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>
     });
   });
   
   describe(<span class="hljs-string">'#registerConversion()'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    it(<span class="hljs-string">'Registers a conversion and updates the statistics'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+      <span class="hljs-keyword">var</span> test4 = bc.getPage(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'http://www.test2.com/register'</span>);
+
+
+      bc.registerConversion(test4.campaignID,
+                            test4.pageVariant,
+                            test4.cookie);
+
+      <span class="hljs-built_in">console</span>.log(bc.getCampaigns()[<span class="hljs-number">0</span>]);
+
+
+    });
+  });
+
+  describe(<span class="hljs-string">'#registerConversion()'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
     it(<span class="hljs-string">'removes the page and returns spliced Array'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-      <span class="hljs-keyword">var</span> test1 = bc.getPage(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'http://www.test2.com/register'</span>);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-3">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
-              </div>
-              <p>console.log(test1)</p>
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>      bc.registerConversion(<span class="hljs-string">'t00000002'</span>,
-                            <span class="hljs-string">'http://www.test2.com/register'</span>,
-                            test1.cookie);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-4">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
-              </div>
-              <p>console.log(bc.getCampaigns()[0]);</p>
+      <span class="hljs-keyword">var</span> test5 = bc.getPage(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'http://www.test2.com/register'</span>);
+      <span class="hljs-keyword">var</span> test6 = bc.getPage(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'http://www.test2.com/register'</span>, test5.cookie);
+      <span class="hljs-built_in">console</span>.log(bc.getCampaigns()[<span class="hljs-number">0</span>]);
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>
+
+      setInterval(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{ <span class="hljs-built_in">console</span>.log(
+      bc.updateExpiredVisits(test6.campaignID));
+        <span class="hljs-built_in">console</span>.log(bc.getCampaigns()[<span class="hljs-number">0</span>]);
+      }, <span class="hljs-number">1000</span>);
+
     });
   });
 });</pre></div></div>

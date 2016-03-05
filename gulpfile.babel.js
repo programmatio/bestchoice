@@ -50,6 +50,6 @@
     gulp.watch(['./src/**/*.js', './test/**/*.js'], ['pre-test', 'test-js']);
   });
 
-  gulp.task('default', ['js','pre-test','test-js' ,'docs','watch']);
+  gulp.task('default', ['js','test-js' ,'docs','watch']);
 
   gulp.task('test', ['pre-test','test-js']);
