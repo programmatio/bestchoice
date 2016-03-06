@@ -72,7 +72,6 @@ describe('bc interface', function() {
         1);
 
       assert.equal(bc.getCampaigns().length, 2);
-
       assert.equal(bc.getCampaigns()[0].campaignID, 't00000002');
       assert.equal(bc.getCampaigns()[1].campaignID, 't00000001');
 
@@ -94,32 +93,12 @@ describe('bc interface', function() {
   });
   
   describe('#registerConversion()', function() {
-    it('Registers a conversion and updates the statistics', function() {
+    it('removes the page from the queue and updates current campaign statistics', function() {
+
       var test4 = bc.getPage('t00000002', 'http://www.test2.com/register');
-
-
       bc.registerConversion(test4.campaignID,
                             test4.pageVariant,
                             test4.cookie);
-
-      console.log(bc.getCampaigns()[0]);
-
-
-    });
-  });
-
-  describe('#registerConversion()', function() {
-    it('removes the page and returns spliced Array', function() {
-
-      var test5 = bc.getPage('t00000002', 'http://www.test2.com/register');
-      var test6 = bc.getPage('t00000002', 'http://www.test2.com/register', test5.cookie);
-      console.log(bc.getCampaigns()[0]);
-
-
-      setInterval(function(){ console.log(
-      bc.updateExpiredVisits(test6.campaignID));
-        console.log(bc.getCampaigns()[0]);
-      }, 1000);
 
     });
   });

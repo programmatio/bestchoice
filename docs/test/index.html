@@ -104,7 +104,6 @@ describe(<span class="hljs-string">'bc interface'</span>, <span class="hljs-func
         <span class="hljs-number">1</span>);
 
       assert.equal(bc.getCampaigns().length, <span class="hljs-number">2</span>);
-
       assert.equal(bc.getCampaigns()[<span class="hljs-number">0</span>].campaignID, <span class="hljs-string">'t00000002'</span>);
       assert.equal(bc.getCampaigns()[<span class="hljs-number">1</span>].campaignID, <span class="hljs-string">'t00000001'</span>);
 
@@ -126,32 +125,12 @@ describe(<span class="hljs-string">'bc interface'</span>, <span class="hljs-func
   });
   
   describe(<span class="hljs-string">'#registerConversion()'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-    it(<span class="hljs-string">'Registers a conversion and updates the statistics'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    it(<span class="hljs-string">'removes the page from the queue and updates current campaign statistics'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+
       <span class="hljs-keyword">var</span> test4 = bc.getPage(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'http://www.test2.com/register'</span>);
-
-
       bc.registerConversion(test4.campaignID,
                             test4.pageVariant,
                             test4.cookie);
-
-      <span class="hljs-built_in">console</span>.log(bc.getCampaigns()[<span class="hljs-number">0</span>]);
-
-
-    });
-  });
-
-  describe(<span class="hljs-string">'#registerConversion()'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-    it(<span class="hljs-string">'removes the page and returns spliced Array'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-
-      <span class="hljs-keyword">var</span> test5 = bc.getPage(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'http://www.test2.com/register'</span>);
-      <span class="hljs-keyword">var</span> test6 = bc.getPage(<span class="hljs-string">'t00000002'</span>, <span class="hljs-string">'http://www.test2.com/register'</span>, test5.cookie);
-      <span class="hljs-built_in">console</span>.log(bc.getCampaigns()[<span class="hljs-number">0</span>]);
-
-
-      setInterval(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{ <span class="hljs-built_in">console</span>.log(
-      bc.updateExpiredVisits(test6.campaignID));
-        <span class="hljs-built_in">console</span>.log(bc.getCampaigns()[<span class="hljs-number">0</span>]);
-      }, <span class="hljs-number">1000</span>);
 
     });
   });
