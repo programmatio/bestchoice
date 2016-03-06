@@ -78,7 +78,7 @@ bc.getPage('t00000001', 'http://www.test2.com/register', 'unique cookie');
 
 ## Express Example
 
-'''
+```
 
 'use strict';
 
@@ -151,4 +151,4 @@ app.listen(3000, function() {
   console.log('Example app listening on port 3000!');
 });
 
-'''
+```
