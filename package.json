@@ -1,6 +1,6 @@
 {
   "name": "bestchoice",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Peafowl.js - Self Learning Weighted Multivariate Testing Tool",
   "main": "app/index.js",
   "scripts": {
