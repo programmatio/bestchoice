@@ -1,7 +1,7 @@
 {
   "name": "bestchoice",
   "version": "0.0.4",
-  "description": "Peafowl.js - Self Learning Weighted Multivariate Testing Tool",
+  "description": "Self Learning Weighted Multivariate Testing Module",
   "main": "app/index.js",
   "scripts": {
     "test": "mocha ./test --compilers js:babel-register"
