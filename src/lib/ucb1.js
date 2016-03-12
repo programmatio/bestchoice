@@ -4,11 +4,13 @@ class UCB1 {
   constructor(counts, values){
     this.counts = counts;
     this.values = values;
+    this.nArms;
   };
 
   initialize() {
-    this.counts = Array(this.nArms).fill(0);
-    this.values = Array(this.nArms).fill(0);
+    this.nArms = nArms;
+    this.counts = new Array(this.nArms).fill(0);
+    this.values = new Array(this.nArms).fill(0);
   };
 
   // Method to select the arm
@@ -33,17 +35,15 @@ class UCB1 {
     return maxIndex(ucbValues);
 
     }
-
   };
 
   update(chosenArm, reward){
     var n = this.counts[chosenArm];
     var value = this.values[chosenArm];
     var newValue = ((n - 1) / n) * value + (1 / n) * reward;
-    this.values[chosenArm] = newValue;
-    return;
+    return this.values[chosenArm] = newValue;
 
   };
-}
+};
 
 module.exports = UCB1;
