@@ -1,7 +1,8 @@
 # bestchoice.js
 Self Learning Weighted Multivariate Testing Module
 
-
+This is a tool to automate the selection of the best page. not only it provides you with an ability to chose the best page, but also it does this more effectively that your typical A/B test approach.
+It is based on Statistical significance test and typically is superior to A/B testing. Rather than telling which page is the best by the end of testing, typical to A/B testing, it gradually selects the best performing page.
 
 ## How to use
 
