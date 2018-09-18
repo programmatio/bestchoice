@@ -26,10 +26,10 @@ Adding a new campaign
 ```
 bc.addCampaign('t00000001',
    'http://www.test1.com/register',
-   ['http://www.test1.com/register/a',
-    'http://www.test1.com/register/b',
-    'http://www.test1.com/register/c',
-    'http://www.test1.com/register/d'],
+   ['http://www.test1.com/register?lpv=a',
+    'http://www.test1.com/register?lpv=b',
+    'http://www.test1.com/register?lpv=c',
+    'http://www.test1.com/register?lpv=b'],
     0.1,
     1);
 ```
